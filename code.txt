@@ -1,0 +1,23 @@
+This is a JavaScript code snippet for a route handler in an Express.js application. It appears to be handling a GET request at the "/stats" endpoint. Let's break down what this code is doing:
+
+1. `router.get("/stats", verifyAndAuthorizeAdmin, async (req, res) => { ... }`: This is defining a route for a GET request at the "/stats" endpoint. It's using the `verifyAndAuthorizeAdmin` middleware to check and authorize that the user is an admin before executing the code inside the route handler.
+
+2. `const date = new Date();`: This line creates a new JavaScript Date object representing the current date and time.
+
+3. `const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));`: This line subtracts one year from the current date using the `setFullYear` method and stores it in the `lastYear` variable.
+
+4. Inside the `try` block, the code is using the Mongoose library to perform aggregation on a "User" collection.
+
+5. `{ $match: { createdAt: { $gte: lastYear } } }`: This is the first stage of the aggregation pipeline. It filters the user documents where the "createdAt" field is greater than or equal to the date stored in the `lastYear` variable.
+
+6. `{ $project: { month: { $month: "$createdAt" } } }`: This is the second stage of the aggregation pipeline. It extracts the month from the "createdAt" field and renames it as "month."
+
+7. `{ $group: { _id: "$month", total: { $sum: 1 } } }`: This is the third stage of the aggregation pipeline. It groups the documents by the "month" field and calculates the total count for each month using the `$sum` operator.
+
+8. `await User.aggregate([...]);`: This line executes the aggregation on the "User" collection and stores the result in the `data` variable.
+
+9. `res.status(200).json(data);`: If the aggregation is successful, it responds with a JSON object containing the aggregated data (total user counts per month) with a status code of 200.
+
+10. In case of an error during the aggregation, it logs the error to the console using `console.log(err)`.
+
+This route is designed to retrieve and send statistics on user registration dates, specifically the total number of users created in each month over the past year. The data is aggregated and returned as a JSON response. It also includes middleware to ensure that the user accessing this route is authorized as an admin.
